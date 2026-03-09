@@ -1,9 +1,6 @@
 use crate::{
     mailers::auth::AuthMailer,
-    models::{
-        _entities::users,
-        users::{LoginParams, RegisterParams},
-    },
+    models::_entities::users,
     views::auth::{CurrentResponse, LoginResponse},
 };
 use loco_rs::prelude::*;
@@ -20,28 +17,14 @@ fn get_allow_email_domain_re() -> &'static Regex {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ForgotParams {
+pub struct RegisterParams {
     pub email: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct ResetParams {
-    pub token: String,
     pub password: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct MagicLinkParams {
-    pub email: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct ResendVerificationParams {
-    pub email: String,
+    pub name: String,
 }
 
 /// Register function creates a new user with the given parameters and sends a
-/// welcome email to the user
+/// welcome email to the user.
 #[debug_handler]
 async fn register(
     State(ctx): State<AppContext>,
@@ -90,6 +73,11 @@ async fn verify(State(ctx): State<AppContext>, Path(token): Path<String>) -> Res
     format::json(())
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ForgotParams {
+    pub email: String,
+}
+
 /// In case the user forgot his password  this endpoints generate a forgot token
 /// and send email to the user. In case the email not found in our DB, we are
 /// returning a valid request for for security reasons (not exposing users DB
@@ -115,6 +103,12 @@ async fn forgot(
     format::json(())
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ResetParams {
+    pub token: String,
+    pub password: String,
+}
+
 /// reset user password by the given parameters
 #[debug_handler]
 async fn reset(State(ctx): State<AppContext>, Json(params): Json<ResetParams>) -> Result<Response> {
@@ -130,6 +124,12 @@ async fn reset(State(ctx): State<AppContext>, Json(params): Json<ResetParams>) -
         .await?;
 
     format::json(())
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct LoginParams {
+    pub email: String,
+    pub password: String,
 }
 
 /// Creates a user login and returns a token
@@ -162,6 +162,11 @@ async fn login(State(ctx): State<AppContext>, Json(params): Json<LoginParams>) -
 async fn current(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
     format::json(CurrentResponse::new(&user))
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct MagicLinkParams {
+    pub email: String,
 }
 
 /// Magic link authentication provides a secure and passwordless way to log in to the application.
@@ -224,6 +229,11 @@ async fn magic_link_verify(
         .or_else(|_| unauthorized("unauthorized!"))?;
 
     format::json(LoginResponse::new(&user, &token))
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ResendVerificationParams {
+    pub email: String,
 }
 
 #[debug_handler]

@@ -2,7 +2,8 @@ use loco_rs::prelude::*;
 
 use crate::{
     mailers::auth::AuthMailer,
-    models::{_entities::users, users::RegisterParams},
+    controllers::auth::RegisterParams,
+    models::_entities::users
 };
 
 pub struct UserCreate;
