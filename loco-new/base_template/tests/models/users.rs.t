@@ -3,7 +3,8 @@ use insta::assert_debug_snapshot;
 use loco_rs::testing::prelude::*;
 use {{settings.module_name}}::{
     app::App,
-    models::users::{self, Model, RegisterParams},
+    controllers::auth::RegisterParams,
+    models::users::{self, Model},
 };
 use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};
 use serial_test::serial;

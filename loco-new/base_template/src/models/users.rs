@@ -1,27 +1,14 @@
+pub use super::_entities::users::{self, ActiveModel, Entity, Model};
+use crate::controllers::auth::RegisterParams;
 use async_trait::async_trait;
 use chrono::{offset::Local, Duration};
 use loco_rs::{auth::jwt, hash, prelude::*};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::Map;
 use uuid::Uuid;
 
-pub use super::_entities::users::{self, ActiveModel, Entity, Model};
-
 pub const MAGIC_LINK_LENGTH: i8 = 32;
 pub const MAGIC_LINK_EXPIRATION_MIN: i8 = 5;
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct LoginParams {
-    pub email: String,
-    pub password: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct RegisterParams {
-    pub email: String,
-    pub password: String,
-    pub name: String,
-}
 
 #[derive(Debug, Validate, Deserialize)]
 pub struct Validator {
